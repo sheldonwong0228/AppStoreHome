@@ -10,11 +10,15 @@ Save api return data into local storage and retrieve it on poor network.
 
 Installation
 Steps:
-1. npm install // get all needed files
-2. react-native link  // link assets to android or ios projects
-3. react-native run-ios // run ios, need install xcode on mac os
+1. open terminal on mac os
+2. go to project root directory
+3. install npm
+4. install react native
+5. npm install // get all needed files
+6. react-native link  // link assets to android or ios projects
+7. react-native run-ios // run ios, need install xcode on mac os
  or
-4. react-native run-android // run android , need connect a phone to the computer and open debug mode
+8. react-native run-android // run android , need connect a phone to the computer and open debug mode
 
 
 In case having installation problem,
