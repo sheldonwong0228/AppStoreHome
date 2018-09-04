@@ -20,7 +20,7 @@ export default class API {
       .then(function (response) {
         return response.json();
       }).then(json=>{
-        // console.log(link, json);
+        console.log(link, json);
         global.API.hideLoading();
         return json;
       })
@@ -52,7 +52,7 @@ export default class API {
             '',
             'Network Connection failure',
             [
-              {text: 'OK', onPress: () => console.log('OK Pressed')},
+              {text: 'OK', onPress: () => null},
             ],
             { cancelable: false }
           )

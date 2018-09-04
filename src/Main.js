@@ -37,6 +37,54 @@ export default class Main extends Component {
     this.maxAppListPager = 10
   }
 
+  render() {
+    return (
+      <View style={[styles.container, { paddingTop: this.state.statusBarHeight, paddingLeft: this.state.containerPadding, paddingRight: this.state.containerPadding }]}>
+
+        {/* show content only if data is not empty */}
+        {this.state.appListData.length > 0 && this.state.recommendationListData.length > 0 && (
+          <View style={styles.container}>
+
+            {/* status bar */}
+            <StatusBar
+              barStyle="dark-content"
+            />
+
+            {/* search */}
+            <Search
+              onChangeText={(value) => this.setState({ text: value }, this.filterList(value))}
+              value={this.state.text}
+            />
+
+            {/* seperator */}
+            <View style={global.Styles.seperator} />
+
+            {/* top 100 free applications list */}
+            <FlatList
+              keyExtractor={item => item.id.toString()}
+              ListHeaderComponent={() => this.renderListHeader()}
+              onScroll={event => this.appListOnScroll(event)}
+              data={this.state.appListData}
+              renderItem={({ item, index }) => <AppListItem data={item} index={index + 1} />}
+            />
+          </View>
+        )}
+
+        {/* show retry button if no data to show */}
+        {this.state.appListData.length == 0 && this.state.recommendationListData.length == 0 && (
+          <RetryButton
+            onPress={() => {
+              // get data from api
+              this.getTop100FreeApp()
+              this.getTop10Grossing()
+            }} />
+        )}
+
+      </View>
+    );
+  }
+
+
   componentDidMount() {
     // Event Listener for orientation changes
     Dimensions.addEventListener('change', () => {
@@ -65,7 +113,6 @@ export default class Main extends Component {
     // get top 100 free application's json data from apple 
     global.API.callApi("https://itunes.apple.com/hk/rss/topfreeapplications/limit=100/json")
       .then(json => {
-
         // store top 100 free applications data to local storage
         global.LocalStorage.save("top-100-free-applications", json.feed.entry)
 
@@ -109,9 +156,10 @@ export default class Main extends Component {
         // update top 10 grossing applications list
         this.updateRecommendationList(json.feed.entry)
 
+
       }).catch(() => {
         // try to get data from local storage if fail to get data from api
-        global.LocalStorage.load("top-10-dasgrossing").then(json => {
+        global.LocalStorage.load("top-10-grossing").then(json => {
           if (json != null) {
             // update top 10 grossing applications list
             this.updateRecommendationList(json)
@@ -215,50 +263,6 @@ export default class Main extends Component {
     }
   }
 
-  render() {
-    return (
-      <View style={[styles.container, { paddingTop: this.state.statusBarHeight, paddingLeft: this.state.containerPadding, paddingRight: this.state.containerPadding }]}>
-        {/* show content only if data is not empty */}
-        {this.state.appListData.length > 0 && this.state.recommendationListData.length > 0 && (
-          <View>
-            {/* status bar */}
-            <StatusBar
-              barStyle="dark-content"
-            />
-
-            {/* search */}
-            <Search
-              onChangeText={(value) => this.setState({ text: value }, this.filterList(value))}
-              value={this.state.text}
-            />
-
-            {/* seperator */}
-            <View style={global.Styles.seperator} />
-
-            {/* top 100 free applications list */}
-            <FlatList
-              keyExtractor={item => item.id.toString()}
-              ListHeaderComponent={() => this.renderListHeader()}
-              onScroll={event => this.appListOnScroll(event)}
-              data={this.state.appListData}
-              renderItem={({ item, index }) => <AppListItem data={item} index={index + 1} />}
-            />
-          </View>
-        )}
-
-        {/* show retry button if no data to show */}
-        {this.state.appListData.length == 0 && this.state.recommendationListData.length == 0 && (
-          <RetryButton
-            onPress={() => {
-              // get data from api
-              this.getTop100FreeApp()
-              this.getTop10Grossing()
-            }} />
-        )}
-
-      </View>
-    );
-  }
 }
 
 const styles = StyleSheet.create({

@@ -16,7 +16,7 @@ export default class RetryButton extends Component {
             <View style={styles.container}>
                 <TouchableOpacity
                     style={styles.buttonContainer}
-                    onPress={this.props.onPress}
+                    {...this.props}
                 >
                 <Text>
                     重試
