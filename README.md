@@ -3,7 +3,9 @@
 Introduction:
 
 An application to display Top 10 grossing applicaions and Top 100 free applications from app store.
-A searching function can be used to search applications by app name, category, author or summary 
+A searching function can be used to search applications by app name, category, author or summary.
+Handle poor network with retry button.
+Save api return data into local storage and retrieve it on poor network.
 
 
 Installation
