@@ -18,8 +18,8 @@ export default class RetryButton extends Component {
                     style={styles.buttonContainer}
                     {...this.props}
                 >
-                <Text>
-                    重試
+                    <Text>
+                        重試
                 </Text>
                 </TouchableOpacity>
             </View>
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     buttonContainer: {
         borderWidth: 1,

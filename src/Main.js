@@ -41,37 +41,36 @@ export default class Main extends Component {
     return (
       <View style={[styles.container, { paddingTop: this.state.statusBarHeight, paddingLeft: this.state.containerPadding, paddingRight: this.state.containerPadding }]}>
 
+        {/* status bar */}
+        <StatusBar
+          barStyle="dark-content"
+        />
+
+        {/* search */}
+        <Search
+          onChangeText={(value) => this.setState({ text: value }, this.filterList(value))}
+          value={this.state.text}
+        />
+
+        {/* seperator */}
+        <View style={global.Styles.seperator} />
+
+
         {/* show content only if data is not empty */}
         {this.state.appListData.length > 0 && this.state.recommendationListData.length > 0 && (
-          <View style={styles.container}>
-
-            {/* status bar */}
-            <StatusBar
-              barStyle="dark-content"
-            />
-
-            {/* search */}
-            <Search
-              onChangeText={(value) => this.setState({ text: value }, this.filterList(value))}
-              value={this.state.text}
-            />
-
-            {/* seperator */}
-            <View style={global.Styles.seperator} />
-
-            {/* top 100 free applications list */}
-            <FlatList
-              keyExtractor={item => item.id.toString()}
-              ListHeaderComponent={() => this.renderListHeader()}
-              onScroll={event => this.appListOnScroll(event)}
-              data={this.state.appListData}
-              renderItem={({ item, index }) => <AppListItem data={item} index={index + 1} />}
-            />
-          </View>
+          /* top 100 free applications list */
+          <FlatList
+            keyExtractor={item => item.id.toString()}
+            ListHeaderComponent={() => this.renderListHeader()}
+            onScroll={event => this.appListOnScroll(event)}
+            data={this.state.appListData}
+            renderItem={({ item, index }) => <AppListItem data={item} index={index + 1} />}
+          />
         )}
 
+
         {/* show retry button if no data to show */}
-        {this.state.appListData.length == 0 && this.state.recommendationListData.length == 0 && (
+        {this.state.text.length == 0 && this.state.appListData.length == 0 && this.state.recommendationListData.length == 0 && (
           <RetryButton
             onPress={() => {
               // get data from api
@@ -133,7 +132,7 @@ export default class Main extends Component {
   updateAppList(data) {
     // store original top 100 free applications for later filter
     this.appListData = data.map((item, index) => {
-      return new Application(index, item["summary"].label, item["im:name"].label, item["im:artist"].label, item["category"].attributes.label, item["im:image"][0].label)
+      return new Application(index, item["summary"].label, item["im:name"].label, item["im:artist"].label, item["category"].attributes.label, item["im:image"][0].label, Math.random() * (5.0 - 0.0) + 0.0, Math.floor(Math.random() * 100) + 1)
     })
 
     // show data with pagination (10 record per page)
@@ -181,31 +180,38 @@ export default class Main extends Component {
   }
 
   filterList(searchingText) {
-    // deep clone current list data
-    cloneApplistData = JSON.parse(JSON.stringify(this.lazyAppListData))
-    // filter top free application list 
-    filteredAppListData = cloneApplistData.filter((item) => {
-      return item.summary.indexOf(searchingText) !== -1 ||
-        item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
-        item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
-        item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
-    });
 
-    // deep clone current list data
-    cloneRecommendationListData = JSON.parse(JSON.stringify(this.recommendationListData))
-    // filter top 10 grossing application list 
-    filteredRecommendationListData = cloneRecommendationListData.filter((item) => {
-      return item.summary.indexOf(searchingText) !== -1 ||
-        item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
-        item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
-        item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
-    });
+    if (this.lazyAppListData) {
+      // deep clone current list data
+      cloneApplistData = JSON.parse(JSON.stringify(this.lazyAppListData))
+      // filter top free application list 
+      filteredAppListData = cloneApplistData.filter((item) => {
+        return item.summary.indexOf(searchingText) !== -1 ||
+          item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
+          item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
+          item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
+      });
+    }
 
-    // update list
-    this.setState({
-      appListData: filteredAppListData,
-      recommendationListData: filteredRecommendationListData,
-    })
+    if (this.recommendationListData) {
+      // deep clone current list data
+      cloneRecommendationListData = JSON.parse(JSON.stringify(this.recommendationListData))
+      // filter top 10 grossing application list 
+      filteredRecommendationListData = cloneRecommendationListData.filter((item) => {
+        return item.summary.indexOf(searchingText) !== -1 ||
+          item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
+          item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
+          item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
+      });
+    }
+
+    if (this.lazyAppListData && this.recommendationListData) {
+      // update list
+      this.setState({
+        appListData: filteredAppListData,
+        recommendationListData: filteredRecommendationListData,
+      })
+    }
 
   }
 

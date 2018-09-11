@@ -46,7 +46,7 @@ export default class AppListVerticalItem extends Component {
                         <Rating
                             type="star"
                             fractions={1}
-                            startingValue={Math.random() * (5.0 - 0.0) + 0.0}
+                            startingValue={this.props.data.ratingStar}
                             ratingColor={global.Color.Orange}
                             ratingBackgroundColor={global.Color.White}
                             type='custom'
@@ -54,7 +54,7 @@ export default class AppListVerticalItem extends Component {
                             imageSize={10}
                         />
                         {/* random fake comment number from 1-100 */}
-                        <Text style={global.Styles.textGrey14}> ({Math.floor(Math.random() * 100) + 1})</Text>
+                        <Text style={global.Styles.textGrey14}> ({this.props.data.comment})</Text>
                     </View>
 
                 </View>
