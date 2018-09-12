@@ -35,6 +35,8 @@ export default class Main extends Component {
     this.appListSizePerPage = 10
     // maxium page
     this.maxAppListPager = 10
+    // store top 100 free applcation
+    this.appDetailList = []
   }
 
   render() {
@@ -67,7 +69,6 @@ export default class Main extends Component {
             renderItem={({ item, index }) => <AppListItem data={item} index={index + 1} />}
           />
         )}
-
 
         {/* show retry button if no data to show */}
         {this.state.text.length == 0 && this.state.appListData.length == 0 && this.state.recommendationListData.length == 0 && (
@@ -105,18 +106,30 @@ export default class Main extends Component {
     // get data from api
     this.getTop100FreeApp()
     this.getTop10Grossing()
+  }
 
+  getAppDetails(id, item, length) {
+    global.API.callApi("https://itunes.apple.com/hk/lookup?id=" + id)
+      .then(json => {
+        item.appDetail = json.results[0]
+        this.appDetailList.push(item)
+        if (this.appDetailList.length == length) {
+          // store top 100 free applications data to local storage
+          global.LocalStorage.save("top-100-free-applications", this.appDetailList)
+          // update 100 free applications list
+          this.updateAppList(this.appDetailList)
+        }
+      })
   }
 
   getTop100FreeApp() {
     // get top 100 free application's json data from apple 
     global.API.callApi("https://itunes.apple.com/hk/rss/topfreeapplications/limit=100/json")
       .then(json => {
-        // store top 100 free applications data to local storage
-        global.LocalStorage.save("top-100-free-applications", json.feed.entry)
 
-        // update 100 free applications list
-        this.updateAppList(json.feed.entry)
+        json.feed.entry.map((item, index) => {
+          this.getAppDetails(item["id"]["attributes"]["im:id"], item, json.feed.entry.length)
+        })
 
       }).catch(() => {
         // try to get data from local storage if fail to get data from api
@@ -132,7 +145,7 @@ export default class Main extends Component {
   updateAppList(data) {
     // store original top 100 free applications for later filter
     this.appListData = data.map((item, index) => {
-      return new Application(index, item["summary"].label, item["im:name"].label, item["im:artist"].label, item["category"].attributes.label, item["im:image"][0].label, Math.random() * (5.0 - 0.0) + 0.0, Math.floor(Math.random() * 100) + 1)
+      return new Application(index, item["summary"].label, item["im:name"].label, item["im:artist"].label, item["category"].attributes.label, item["im:image"][0].label, item.appDetail.averageUserRating, item.appDetail.userRatingCount)
     })
 
     // show data with pagination (10 record per page)

@@ -42,19 +42,19 @@ export default class AppListVerticalItem extends Component {
                     </Text>
 
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        {/* random fake rating star from 0.0 - 5.0 */}
+                        {/* rating star */}
                         <Rating
                             type="star"
                             fractions={1}
-                            startingValue={this.props.data.ratingStar}
+                            startingValue={this.props.data.ratingStar ? this.props.data.ratingStar : 0.0}
                             ratingColor={global.Color.Orange}
                             ratingBackgroundColor={global.Color.White}
                             type='custom'
                             readonly
                             imageSize={10}
                         />
-                        {/* random fake comment number from 1-100 */}
-                        <Text style={global.Styles.textGrey14}> ({this.props.data.comment})</Text>
+                        {/* comment number */}
+                        <Text style={global.Styles.textGrey14}> ({this.props.data.comment ? this.props.data.comment : 0})</Text>
                     </View>
 
                 </View>
