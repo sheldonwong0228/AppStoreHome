@@ -59,7 +59,7 @@ export default class Main extends Component {
 
 
         {/* show content only if data is not empty */}
-        {this.state.appListData.length > 0 && this.state.recommendationListData.length > 0 && (
+        {(this.state.appListData.length > 0 || this.state.recommendationListData.length > 0) && (
           /* top 100 free applications list */
           <FlatList
             keyExtractor={item => item.id.toString()}
@@ -193,13 +193,15 @@ export default class Main extends Component {
   }
 
   filterList(searchingText) {
+    filteredAppListData = []
+    cloneRecommendationListData = []
 
     if (this.lazyAppListData) {
       // deep clone current list data
       cloneApplistData = JSON.parse(JSON.stringify(this.lazyAppListData))
       // filter top free application list 
       filteredAppListData = cloneApplistData.filter((item) => {
-        return item.summary.indexOf(searchingText) !== -1 ||
+        return item.summary.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
@@ -211,20 +213,18 @@ export default class Main extends Component {
       cloneRecommendationListData = JSON.parse(JSON.stringify(this.recommendationListData))
       // filter top 10 grossing application list 
       filteredRecommendationListData = cloneRecommendationListData.filter((item) => {
-        return item.summary.indexOf(searchingText) !== -1 ||
+        return item.summary.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.name.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.artist.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1 ||
           item.category.toLowerCase().indexOf(searchingText.toLowerCase()) !== -1;
       });
     }
 
-    if (this.lazyAppListData && this.recommendationListData) {
-      // update list
-      this.setState({
-        appListData: filteredAppListData,
-        recommendationListData: filteredRecommendationListData,
-      })
-    }
+    // update list
+    this.setState({
+      appListData: filteredAppListData,
+      recommendationListData: filteredRecommendationListData,
+    })
 
   }
 
